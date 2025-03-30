@@ -21,8 +21,8 @@ h1 {
 }
 
 .tic-tac-toe td {
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
   border: 5px solid white;
   text-align: center;
   font-size: 24px;
