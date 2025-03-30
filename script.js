@@ -1,4 +1,5 @@
-let fields = [null, "circle", null, "cross", null, null, null, null, null];
+let fields = [null, null, null, null, null, null, null, null, null];
+let currentPlayer = "circle";
 
 function init() {
   render();
@@ -18,7 +19,7 @@ function render() {
       } else if (fields[index] === "cross") {
         symbol = generateCrossSVG();
       }
-      tableHTML += `<td>${symbol}</td>`;
+      tableHTML += `<td onclick="setSymbol(this, ${index})">${symbol}</td>`;
     }
     tableHTML += "</tr>";
   }
@@ -26,6 +27,15 @@ function render() {
   tableHTML += "</table>";
   content.innerHTML = tableHTML;
 }
+
+function setSymbol(cell, index) {
+  if (!fields[index]) {
+    fields[index] = currentPlayer;
+    cell.innerHTML = currentPlayer === "circle" ? generateCircleSVG() : generateCrossSVG();
+    currentPlayer = currentPlayer === "circle" ? "cross" : "circle";
+  }
+}
+
 
 function generateCircleSVG() {
   return `

@@ -10,7 +10,7 @@ h1 {
 }
 
 #content {
-  margin-top: 300px;
+  margin-top: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,4 +45,9 @@ h1 {
 
 .tic-tac-toe td:last-child {
   border-right: none;
+}
+
+td:hover{
+background-color: rgba(172, 255, 47, 0.26);
+cursor: pointer;
 }
