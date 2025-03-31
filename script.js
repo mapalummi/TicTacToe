@@ -1,5 +1,7 @@
 let fields = [null, null, null, null, null, null, null, null, null];
 let currentPlayer = "circle";
+let gameOver = false;
+let winningCombination = null;
 
 function init() {
   render();
@@ -19,23 +21,105 @@ function render() {
       } else if (fields[index] === "cross") {
         symbol = generateCrossSVG();
       }
-      tableHTML += `<td onclick="setSymbol(this, ${index})">${symbol}</td>`;
+      let className = winningCombination && winningCombination.includes(index) ? "winner" : "";
+      tableHTML += `<td onclick="setSymbol(this, ${index})" class="${className}" id="cell-${index}">${symbol}</td>`;
     }
     tableHTML += "</tr>";
   }
 
   tableHTML += "</table>";
   content.innerHTML = tableHTML;
-}
-
-function setSymbol(cell, index) {
-  if (!fields[index]) {
-    fields[index] = currentPlayer;
-    cell.innerHTML = currentPlayer === "circle" ? generateCircleSVG() : generateCrossSVG();
-    currentPlayer = currentPlayer === "circle" ? "cross" : "circle";
+  if (gameOver) {
+    drawWinningLine();
   }
 }
 
+function setSymbol(cell, index) {
+  if (gameOver || fields[index]) return; // Verhindert weitere Züge nach dem Spielende
+
+  fields[index] = currentPlayer;
+  cell.innerHTML = currentPlayer === "circle" ? generateCircleSVG() : generateCrossSVG();
+  if (checkWinner()) {
+    gameOver = true;
+  } else {
+    currentPlayer = currentPlayer === "circle" ? "cross" : "circle";
+  }
+  if (gameOver) {
+    drawWinningLine();
+  }
+}
+
+function checkWinner() {
+  const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  for (let combination of winningCombinations) {
+    const [a, b, c] = combination;
+    if (fields[a] && fields[a] === fields[b] && fields[a] === fields[c]) {
+      winningCombination = combination;
+      return true;
+    }
+  }
+
+  if (fields.every((field) => field !== null)) {
+    // Unentschieden, falls alle Felder belegt sind
+    gameOver = true;
+  }
+
+  return false;
+}
+
+function drawWinningLine() {
+  if (!winningCombination) return;
+
+  let table = document.querySelector(".tic-tac-toe");
+  let firstCell = document.getElementById(`cell-${winningCombination[0]}`);
+  let lastCell = document.getElementById(`cell-${winningCombination[2]}`);
+
+  if (!firstCell || !lastCell) return;
+
+  let tableRect = table.getBoundingClientRect();
+  let firstRect = firstCell.getBoundingClientRect();
+  let lastRect = lastCell.getBoundingClientRect();
+
+  // Prüfen, ob eine bestehende Linie entfernt werden muss
+  let existingLine = document.querySelector(".winning-line");
+  if (existingLine) existingLine.remove();
+
+  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "winning-line");
+  svg.setAttribute("viewBox", `0 0 ${tableRect.width} ${tableRect.height}`);
+
+  let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", firstRect.left - tableRect.left + firstRect.width / 2);
+  line.setAttribute("y1", firstRect.top - tableRect.top + firstRect.height / 2);
+  line.setAttribute("x2", lastRect.left - tableRect.left + lastRect.width / 2);
+  line.setAttribute("y2", lastRect.top - tableRect.top + lastRect.height / 2);
+
+  // Keine direkten Stile in JavaScript setzen – alles wird über CSS geregelt
+  line.setAttribute("class", "winning-line-stroke");
+
+  svg.appendChild(line);
+  table.appendChild(svg);
+}
+
+function getCellPosition(index) {
+  // Diese Funktion gibt die Positionen der Zellen als Prozentwerte zurück
+  let row = Math.floor(index / 3);
+  let col = index % 3;
+  return {
+    x: col * 33.33 + 16.66, // Zentriert innerhalb der Zelle
+    y: row * 33.33 + 16.66, // Zentriert innerhalb der Zelle
+  };
+}
 
 function generateCircleSVG() {
   return `
@@ -59,4 +143,15 @@ function generateCrossSVG() {
           </line>
       </svg>
   `;
+}
+
+function restartGame() {
+  fields = [null, null, null, null, null, null, null, null, null];
+  currentPlayer = "circle"; // Startspieler zurücksetzen
+  winningCombination = null; // Wichtige Änderung: Gewinnkombination löschen
+
+  // Alle vorhandenen Linien entfernen
+  document.querySelectorAll(".winning-line").forEach((line) => line.remove());
+
+  render();
 }
