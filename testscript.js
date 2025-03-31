@@ -80,28 +80,35 @@ function checkWinner() {
 function drawWinningLine() {
   if (!winningCombination) return;
 
-  let cells = document.querySelectorAll('td');
-  let [a, b, c] = winningCombination;
+  let table = document.querySelector('.tic-tac-toe');
+  let firstCell = document.getElementById(`cell-${winningCombination[0]}`);
+  let lastCell = document.getElementById(`cell-${winningCombination[2]}`);
 
-  // Berechnung der Positionen der Zellen für das SVG Line
-  let startPos = getCellPosition(a);
-  let endPos = getCellPosition(c);
+  if (!firstCell || !lastCell) return;
 
-  // Berechnung der Eigenschaften für die Linie
-  let startCell = document.getElementById(`cell-${a}`);
-  let endCell = document.getElementById(`cell-${c}`);
+  let tableRect = table.getBoundingClientRect();
+  let firstRect = firstCell.getBoundingClientRect();
+  let lastRect = lastCell.getBoundingClientRect();
 
-  // SVG-Linie als Hintergrund in die Zellen einfügen
-  startCell.style.position = 'relative';
-  endCell.style.position = 'relative';
+  // Prüfen, ob eine bestehende Linie entfernt werden muss
+  let existingLine = document.querySelector('.winning-line');
+  if (existingLine) existingLine.remove();
 
-  // Die Linie wird nun direkt in den Content-Bereich eingefügt, nicht in einzelne Zellen
-  document.querySelector('.tic-tac-toe').insertAdjacentHTML('beforeend', `
-    <svg class="winning-line" width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <line x1="${startPos.x}" y1="${startPos.y}" x2="${endPos.x}" y2="${endPos.y}" 
-            stroke="#FF0000" stroke-width="10" />
-    </svg>
-  `);
+  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "winning-line");
+  svg.setAttribute("viewBox", `0 0 ${tableRect.width} ${tableRect.height}`);
+
+  let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", firstRect.left - tableRect.left + firstRect.width / 2);
+  line.setAttribute("y1", firstRect.top - tableRect.top + firstRect.height / 2);
+  line.setAttribute("x2", lastRect.left - tableRect.left + lastRect.width / 2);
+  line.setAttribute("y2", lastRect.top - tableRect.top + lastRect.height / 2);
+
+  // Keine direkten Stile in JavaScript setzen – alles wird über CSS geregelt
+  line.setAttribute("class", "winning-line-stroke");
+
+  svg.appendChild(line);
+  table.appendChild(svg);
 }
 
 function getCellPosition(index) {

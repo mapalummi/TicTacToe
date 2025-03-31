@@ -18,6 +18,8 @@ h1 {
 }
 
 .tic-tac-toe {
+  width: 300px;
+  height: 300px;
   border-collapse: collapse;
 }
 
@@ -55,5 +57,27 @@ cursor: pointer;
 
 .winning-line {
   position: absolute;
-  pointer-events: none; /* Verhindert, dass die Linie das Anklicken der Zellen blockiert */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.winning-line-stroke {
+  stroke: red; /* Farbe der Linie */
+  stroke-width: 10px; /* Dicke der Linie */
+  stroke-linecap: round; /* Abgerundete Enden */
+  stroke-dasharray: 100%; /* Optional: Animation */
+  stroke-dashoffset: 100%;
+  animation: drawLine 0.5s linear forwards; /* Animierte Linie */
+}
+
+@keyframes drawLine {
+  from {
+    stroke-dashoffset: 100%;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
