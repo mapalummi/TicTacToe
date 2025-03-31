@@ -10,6 +10,7 @@ h1 {
 }
 
 #content {
+  position: relative;
   margin-top: 200px;
   display: flex;
   justify-content: center;
@@ -50,4 +51,9 @@ h1 {
 td:hover{
 background-color: rgba(172, 255, 47, 0.26);
 cursor: pointer;
+}
+
+.winning-line {
+  position: absolute;
+  pointer-events: none; /* Verhindert, dass die Linie das Anklicken der Zellen blockiert */
 }
