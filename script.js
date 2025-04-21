@@ -69,7 +69,7 @@ function checkWinner() {
     }
   }
 
-  if (fields.every((field) => field !== null)) {
+  if (fields.every(field => field !== null)) {
     // Unentschieden, falls alle Felder belegt sind
     gameOver = true;
   }
@@ -151,7 +151,26 @@ function restartGame() {
   winningCombination = null; // Wichtige Änderung: Gewinnkombination löschen
 
   // Alle vorhandenen Linien entfernen
-  document.querySelectorAll(".winning-line").forEach((line) => line.remove());
+  document.querySelectorAll(".winning-line").forEach(line => line.remove());
 
   render();
 }
+
+// Tastenkombinationen blockieren (F12, Ctrl+Shift+I, Ctrl+U)
+document.addEventListener("keydown", function (e) {
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) || (e.ctrlKey && e.key === "U")) {
+    e.preventDefault();
+    e.stopPropagation();
+    alert("🔒 Diese Aktion ist deaktiviert.");
+  }
+});
+
+// Rechtsklick blockieren
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+  alert("🚫 Rechtsklick deaktiviert!");
+});
+
+// Stylische Konsole-Message
+console.log("%cHey du Hacker 😎", "color: limegreen; font-size: 24px; font-weight: bold;");
+console.log("Willkommen in der Konsole. Sei vorsichtig, was du hier eingibst!");
